@@ -243,3 +243,42 @@ net.Receive( "BlurHSOpenHitmanMenu", function()
 	MainMenu()	
 	
 end )
+
+net.Receive( "BlurHSOpenHitMenu", function()
+
+	function MainMenu()
+		local menu = vgui.Create( "DFrame" )
+		menu:SetSize( 300, 300 )
+		menu:Center()
+		menu:SetDraggable( true )
+		menu:MakePopup()
+		menu:SetTitle( "" )
+		menu:ShowCloseButton( false )
+		menu.Paint = function( self, w, h )
+			DrawBlur(menu, 2)
+			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+			drawRectOutline( 2, 2, w - 4, h / 8.9, Color( 0, 0, 0, 85 ) )
+			draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
+			draw.SimpleText( "Place A Hit", "HTSYSTitleFont", menu:GetWide() / 2, 20, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+		
+		local frameclose = vgui.Create( "DButton", menu )
+		frameclose:SetSize( 35, 35 )
+		frameclose:SetPos( menu:GetWide() - 36,5 )
+		frameclose:SetText( "X" )
+		frameclose:SetFont( "HTSYSfontclose" )
+		frameclose:SetTextColor( Color( 255, 255, 255 ) )
+		frameclose.Paint = function()
+			
+		end
+		frameclose.DoClick = function()
+			menu:Close()
+			menu:Remove()
+			gui.EnableScreenClicker( false )			
+		end	
+	end
+	
+	MainMenu()
+	
+end )
