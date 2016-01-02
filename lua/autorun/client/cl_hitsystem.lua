@@ -35,7 +35,7 @@ local function drawRectOutline( x, y, w, h, color )
 	surface.DrawOutlinedRect( x, y, w, h )
 end
 
-net.Receive( "HTSYSOpenHitmanMenu", function()
+net.Receive( "BlurHSOpenHitmanMenu", function()
 	local title = net.ReadTable()
 	
 	function MainMenu()

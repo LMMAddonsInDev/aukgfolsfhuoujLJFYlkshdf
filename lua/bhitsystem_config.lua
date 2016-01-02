@@ -6,7 +6,4 @@ BHitSysConfig.DevMode = true -- DO NOT TOUCH
 -- XxLMM13xXgaming ()
 ----------------------------------------------------------
 
-BHitSysConfig.HitmanTeams = { "Hitman" } -- Teams that can use the hitman menu (are the hitmans)
-
-
----------------lsdjhvlf;jvbhlxjchvkjchvckjxbhcxkjbv,nbg,jb 
+BHitSysConfig.HitmanTeams = { "Hitman", "Citizen" } -- Teams that can use the hitman menu (are the hitmans)
