@@ -252,7 +252,7 @@ net.Receive( "BlurHSOpenHitmanMenu", function()
 
 	MainMenu()	
 	
-end )
+end ) 
 
 net.Receive( "BlurHSOpenHitMenu", function()
 

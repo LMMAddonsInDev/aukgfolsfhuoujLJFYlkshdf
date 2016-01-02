@@ -24,3 +24,16 @@ end
 concommand.Add("hitmenu", function( ply )
 	SendGUI(ply)
 end )
+
+concommand.Add("placehit", function( ply )
+	SendGUI(ply)
+end )
+
+function BlurHSOpenMenu(ply, text)
+	local text = string.lower(text)
+	if(string.sub(text, 0, 100)== "/hitmenu" or string.sub(text, 0, 100)== "!hitmenu" or string.sub(text, 0, 100)== "!placehit" or string.sub(text, 0, 100)== "/placehit") then
+		SendGUI(ply)
+		return ''
+	end
+end 
+hook.Add("PlayerSay", "BlurHSOpenMenu", BlurHSOpenMenu)
