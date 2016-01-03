@@ -37,8 +37,17 @@ local function drawRectOutline( x, y, w, h, color )
 	surface.DrawOutlinedRect( x, y, w, h )
 end
 
-net.Receive( "BlurHSOpenHitmanMenu", function()
-	local title = net.ReadTable()
+net.Receive( "BlurHSOpenHitmanMenu", function()	
+
+	local ply = LocalPlayer()
+
+	local rvictim = ply:GetNWEntity("HitsVictim")
+	local rprice = ply:GetNWInt("HitsReward")
+	local rnotes = ply:GetNWString("ExtraNotes")		
+
+	print(rvictim)
+	print(rprice)
+	print(rnotes)
 	
 	function MainMenu()
 		local menu = vgui.Create( "DFrame" )
@@ -141,7 +150,7 @@ local menu = vgui.Create( "DFrame" )
 		local model = vgui.Create( "DModelPanel", menu )
 		model:SetSize( 200, 250 )
 		model:SetPos( 395, 50 )
-		model:SetModel( LocalPlayer():GetModel() )  
+		model:SetModel( rvictim:GetModel() )  
 		--model.Paint = function()
 		--	surface.DrawOutlinedRect( 0, 0, model:GetWide(), model:GetTall() )		
 		
@@ -291,6 +300,8 @@ end )
 
 net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
 
+	local hitman = net.ReadEntity()
+
 	function MainMenu()
 		local menu = vgui.Create( "DFrame" )
 		menu:SetSize( 300, 100 )
@@ -335,6 +346,7 @@ net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
 					dmenu:AddOption( v:Nick(), function()
 						net.Start("BlurHSSendPlayerToHit")
 							net.WriteEntity( v )
+							net.WriteEntity(hitman)
 						net.SendToServer()
 						menu:Close()
 						menu:Remove()
@@ -351,6 +363,9 @@ net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
 	
 end )
 net.Receive( "BlurHSOpenHitMenuPrice", function()
+
+	local victim = net.ReadEntity()
+	local hitman = net.ReadEntity()
 
 	function MainMenu()
 		local menu = vgui.Create( "DFrame" )
@@ -391,6 +406,8 @@ net.Receive( "BlurHSOpenHitMenuPrice", function()
 		TextEntry.OnEnter = function( self )
 			net.Start("BlurHSSendHitPrice")
 				net.WriteString(self:GetValue())
+				net.WriteEntity( victim )
+				net.WriteEntity( hitman )
 			net.SendToServer()
 			menu:Close()
 			menu:Remove()
@@ -405,7 +422,11 @@ net.Receive( "BlurHSOpenHitMenuPrice", function()
 end )
 
 net.Receive( "BlurHSOpenHitMenuNotes", function()
-
+	
+	local hitprice = tonumber(net.ReadString())
+	local victim = net.ReadEntity()
+	local hitman = net.ReadEntity()
+	
 	function MainMenu()
 		local menu = vgui.Create( "DFrame" )
 		menu:SetSize( 300, 100 )
@@ -445,6 +466,9 @@ net.Receive( "BlurHSOpenHitMenuNotes", function()
 		TextEntry.OnEnter = function( self )
 			net.Start("BlurHSSendHitNotes")
 				net.WriteString(self:GetValue())
+				net.WriteString(hitprice)
+				net.WriteEntity( victim )
+				net.WriteEntity( hitman )
 			net.SendToServer()
 			menu:Close()
 			menu:Remove()

@@ -23,22 +23,27 @@ util.AddNetworkString("BlurHSErrorHitOnSelf")
 util.AddNetworkString("BlurHSErrorPriceIsString")
 util.AddNetworkString("BlurHSErrorPriceIsToHigh")
 util.AddNetworkString("BlurHSErrorPriceIsToLow")
-util.AddNetworkString("")
-util.AddNetworkString("")
-util.AddNetworkString("")
-util.AddNetworkString("")
-util.AddNetworkString("")
-util.AddNetworkString("")
 --[[Errors]]--
 
+function FinishData( hitman, victim, hitprice, notes )
+	hitman:SetNWBool("ActiveHit", true)
+	hitman:SetNWEntity("HitsVictim", victim)
+	hitman:SetNWInt("HitsReward", hitprice)
+	hitman:SetNWString("ExtraNotes", notes)
+end
+
 function SendGUI( ply )
+
+	HitInfo = {}
+
 	if table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(ply:Team()) ) then
 		net.Start("BlurHSOpenHitmanMenu")
-		
+			local victim = ply:GetNWEntity("HitsVictim")
+			local price = ply:GetNWInt("HitsReward")
+			local notes = ply:GetNWString("ExtraNotes")	
 		net.Send(ply)
 	else
 		net.Start("BlurHSOpenHitMenu")
-		
 		net.Send(ply)
 	end
 end
@@ -53,27 +58,35 @@ net.Receive("BlurHSPickSendHit", function( len, ply )
 	end
 
 	net.Start("BlurHSOpenHitMenuPlayerToHit")
+		net.WriteEntity(hitman)
 	net.Send(ply)
+		
+	
 	
 end )
 
 
 net.Receive("BlurHSSendPlayerToHit", function( len, ply )
-	local tohit = net.ReadEntity()
+	local victim = net.ReadEntity()
+	local hitman = net.ReadEntity()
 	
-	if tohit == ply then
+	if victim == ply then
 		net.Start("BlurHSErrorHitOnSelf")
 		net.Send(ply)
 		return 
 	end
 	
 	net.Start("BlurHSOpenHitMenuPrice")
+		net.WriteEntity(victim)
+		net.WriteEntity(hitman)
 	net.Send(ply)
 
 end)
 
 net.Receive("BlurHSSendHitPrice", function( len, ply )
 	local hitprice = tonumber(net.ReadString())
+	local victim = net.ReadEntity()
+	local hitman = net.ReadEntity()
 	
 	if not isnumber(hitprice) then
 		net.Start("BlurHSErrorPriceIsString")
@@ -90,10 +103,24 @@ net.Receive("BlurHSSendHitPrice", function( len, ply )
 			return
 		else
 			net.Start("BlurHSOpenHitMenuNotes")
+				net.WriteString( hitprice )
+				net.WriteEntity( victim )
+				net.WriteEntity( hitman )
 			net.Send(ply)
 		end
 	end
 	
+end )
+
+net.Receive("BlurHSSendHitNotes", function( len, ply )
+	local notes = net.ReadString()
+	local hitprice = tonumber(net.ReadString())
+	local victim = net.ReadEntity()
+	local hitman = net.ReadEntity()
+	
+	if notes == nil then notes = "None" end
+	
+	FinishData( hitman, victim, hitprice, notes )
 end )
 
 function BlurHSOpenMenu(ply, text)
