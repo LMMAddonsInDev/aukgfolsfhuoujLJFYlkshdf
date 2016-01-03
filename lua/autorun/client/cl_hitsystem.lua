@@ -1,3 +1,5 @@
+include("bhitsystem_config.lua")
+
 surface.CreateFont( "HTSYSfontclose", {
 		font = "Lato Light",
 		size = 25,
@@ -110,74 +112,45 @@ net.Receive( "BlurHSOpenHitmanMenu", function()
 	end
 		
 	function Active()
-		local menu2 = vgui.Create( "DFrame" )
-		menu2:SetSize( 300, 500 )
-		menu2:Center()
-		menu2:SetDraggable( true )
-		menu2:MakePopup()
-		menu2:SetTitle( "" )
-		menu2:ShowCloseButton( false )
-		menu2.Paint = function( self, w, h )
-			DrawBlur(menu2, 2)
+local menu = vgui.Create( "DFrame" )
+		menu:SetSize( 600, 400 )
+		menu:Center()
+		menu:SetDraggable( true )
+		menu:MakePopup()
+		menu:SetTitle( "" )
+		menu:ShowCloseButton( false )
+		menu.Paint = function( self, w, h )
+			DrawBlur(menu, 2)
 			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
 			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
 			drawRectOutline( 2, 2, w - 4, h / 8.9, Color( 0, 0, 0, 85 ) )
 			draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
-			draw.SimpleText( "Hit Menu", "HTSYSTitleFont", menu2:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText( "Place A Hit", "HTSYSTitleFont", menu:GetWide() / 2, 20, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
-		local frameclose = vgui.Create( "DButton", menu2 )
+		local frameclose = vgui.Create( "DButton", menu )
 		frameclose:SetSize( 35, 35 )
-		frameclose:SetPos( menu2:GetWide() - 36,9 )
+		frameclose:SetPos( menu:GetWide() - 36,5 )
 		frameclose:SetText( "X" )
 		frameclose:SetFont( "HTSYSfontclose" )
 		frameclose:SetTextColor( Color( 255, 255, 255 ) )
 		frameclose.Paint = function()
 			
 		end
+		
+		local model = vgui.Create( "DModelPanel", menu )
+		model:SetSize( 200, 250 )
+		model:SetPos( 395, 50 )
+		model:SetModel( LocalPlayer():GetModel() )  
+		--model.Paint = function()
+		--	surface.DrawOutlinedRect( 0, 0, model:GetWide(), model:GetTall() )		
+		
 		frameclose.DoClick = function()
-			menu2:Close()
-			menu2:Remove()
-			gui.EnableScreenClicker( false )			
-		end	
-
-		local frameback = vgui.Create( "DButton", menu2 )
-		frameback:SetSize( menu2:GetWide() - 20, 20 )
-		frameback:SetPos( 10, 60 )
-		frameback:SetText( "Back" )
-		frameback:SetFont( "HTSYSfontclose" )
-		frameback:SetTextColor( Color( 255, 255, 255 ) )
-		frameback.Paint = function( self, w, h )
-			DrawBlur(frameback, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+			menu:Close()
+			menu:Remove()
+			model:Remove()			
+			gui.EnableScreenClicker( false )
 		end
-		frameback.DoClick = function()
-			menu2:Close()
-			menu2:Remove()
-			MainMenu()
-		end			
-		
-		local DListView = vgui.Create( "DListView", menu2 )
-		DListView:SetSize( menu2:GetWide() - 20, menu2:GetTall() - 100 )
-		DListView:SetPos( 10, 85 )
-		DListView:AddColumn( "Placed On" )
-		DListView:AddColumn( "Placed By" )
-		DListView:AddColumn( "Price" )
-		DListView.Paint = function( self, w, h )
-			DrawBlur(DListView, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
-		end
---		function DListView:DoDoubleClick( line )
---			local LocalText = DListView:GetLine( line ):GetValue( 2 )
---			local LocalTitle = DListView:GetLine( line ):GetValue( 1 )		
---		
---			LocalPlayer():ConCommand( "say "..LocalText )
---			menu2:Close()
---			menu2:Remove()			
---		end		
-		
 	end
 	
 	function Pendinghits()
@@ -258,7 +231,7 @@ net.Receive( "BlurHSOpenHitMenu", function()
 
 	function MainMenu()
 		local menu = vgui.Create( "DFrame" )
-		menu:SetSize( 300, 300 )
+		menu:SetSize( 300, 100 )
 		menu:Center()
 		menu:SetDraggable( true )
 		menu:MakePopup()
@@ -268,14 +241,14 @@ net.Receive( "BlurHSOpenHitMenu", function()
 			DrawBlur(menu, 2)
 			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
 			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-			drawRectOutline( 2, 2, w - 4, h / 8.9, Color( 0, 0, 0, 85 ) )
-			draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
+			drawRectOutline( 2, 2, w - 4, h / 2.9, Color( 0, 0, 0, 85 ) )
+			draw.RoundedBox(0, 2, 2, w - 4, h / 3, Color(0,0,0,125))
 			draw.SimpleText( "Place A Hit", "HTSYSTitleFont", menu:GetWide() / 2, 20, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
 		local frameclose = vgui.Create( "DButton", menu )
 		frameclose:SetSize( 35, 35 )
-		frameclose:SetPos( menu:GetWide() - 36,5 )
+		frameclose:SetPos( menu:GetWide() - 34,5 )
 		frameclose:SetText( "X" )
 		frameclose:SetFont( "HTSYSfontclose" )
 		frameclose:SetTextColor( Color( 255, 255, 255 ) )
@@ -287,6 +260,198 @@ net.Receive( "BlurHSOpenHitMenu", function()
 			menu:Remove()
 			gui.EnableScreenClicker( false )			
 		end	
+		
+		local placehit = vgui.Create( "DButton", menu )
+		placehit:SetSize( menu:GetWide() - 20, 20 )
+		placehit:SetPos( 10,60 )
+		placehit:SetText( "Select A Hitman" )
+--		placehit:SetFont( "HTSYSfontclose" )
+		placehit.DoClick = function()
+			local dmenu = DermaMenu()
+			for k, v in pairs( player.GetAll() ) do
+				if table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(v:Team()) ) then
+					dmenu:AddOption( v:Nick(), function()
+						net.Start("BlurHSPickSendHit")
+							net.WriteEntity( v )
+						net.SendToServer()
+						menu:Close()
+						menu:Remove()
+						gui.EnableScreenClicker( false )						
+					end )
+				end
+			end
+			dmenu:Open()
+		end	
+		
+	end
+	
+	MainMenu()
+	
+end )
+
+net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
+
+	function MainMenu()
+		local menu = vgui.Create( "DFrame" )
+		menu:SetSize( 300, 100 )
+		menu:Center()
+		menu:SetDraggable( true )
+		menu:MakePopup()
+		menu:SetTitle( "" )
+		menu:ShowCloseButton( false )
+		menu.Paint = function( self, w, h )
+			DrawBlur(menu, 2)
+			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+			drawRectOutline( 2, 2, w - 4, h / 2.9, Color( 0, 0, 0, 85 ) )
+			draw.RoundedBox(0, 2, 2, w - 4, h / 3, Color(0,0,0,125))
+			draw.SimpleText( "Place A Hit", "HTSYSTitleFont", menu:GetWide() / 2, 20, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+		
+		local frameclose = vgui.Create( "DButton", menu )
+		frameclose:SetSize( 35, 35 )
+		frameclose:SetPos( menu:GetWide() - 34,5 )
+		frameclose:SetText( "X" )
+		frameclose:SetFont( "HTSYSfontclose" )
+		frameclose:SetTextColor( Color( 255, 255, 255 ) )
+		frameclose.Paint = function()
+			
+		end
+		frameclose.DoClick = function()
+			menu:Close()
+			menu:Remove()
+			gui.EnableScreenClicker( false )			
+		end	
+		
+		local placehit = vgui.Create( "DButton", menu )
+		placehit:SetSize( menu:GetWide() - 20, 20 )
+		placehit:SetPos( 10,60 )
+		placehit:SetText( "Select A Victim" )
+--		placehit:SetFont( "HTSYSfontclose" )
+		placehit.DoClick = function()
+			local dmenu = DermaMenu()
+			for k, v in pairs( player.GetAll() ) do
+				if v != LocalPlayer() then
+					dmenu:AddOption( v:Nick(), function()
+						net.Start("BlurHSSendPlayerToHit")
+							net.WriteEntity( v )
+						net.SendToServer()
+						menu:Close()
+						menu:Remove()
+						gui.EnableScreenClicker( false )						
+					end )
+				end
+			end
+			dmenu:Open()
+		end	
+		
+	end
+	
+	MainMenu()
+	
+end )
+net.Receive( "BlurHSOpenHitMenuPrice", function()
+
+	function MainMenu()
+		local menu = vgui.Create( "DFrame" )
+		menu:SetSize( 300, 100 )
+		menu:Center()
+		menu:SetDraggable( true )
+		menu:MakePopup()
+		menu:SetTitle( "" )
+		menu:ShowCloseButton( false )
+		menu.Paint = function( self, w, h )
+			DrawBlur(menu, 2)
+			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+			drawRectOutline( 2, 2, w - 4, h / 2.9, Color( 0, 0, 0, 85 ) )
+			draw.RoundedBox(0, 2, 2, w - 4, h / 3, Color(0,0,0,125))
+			draw.SimpleText( "Place A Hit", "HTSYSTitleFont", menu:GetWide() / 2, 20, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+		
+		local frameclose = vgui.Create( "DButton", menu )
+		frameclose:SetSize( 35, 35 )
+		frameclose:SetPos( menu:GetWide() - 34,5 )
+		frameclose:SetText( "X" )
+		frameclose:SetFont( "HTSYSfontclose" )
+		frameclose:SetTextColor( Color( 255, 255, 255 ) )
+		frameclose.Paint = function()
+			
+		end
+		frameclose.DoClick = function()
+			menu:Close()
+			menu:Remove()
+			gui.EnableScreenClicker( false )			
+		end	
+
+		local TextEntry = vgui.Create( "DTextEntry", menu )	-- create the form as a child of frame
+		TextEntry:SetPos( 10, 60 )
+		TextEntry:SetSize( menu:GetWide() - 20, 20 )
+		TextEntry:SetText( "Set Hit Price ("..BHitSysConfig.MinHitPrice.."-"..BHitSysConfig.MaxHitPrice..")" )
+		TextEntry.OnEnter = function( self )
+			net.Start("BlurHSSendHitPrice")
+				net.WriteString(self:GetValue())
+			net.SendToServer()
+			menu:Close()
+			menu:Remove()
+			gui.EnableScreenClicker( false )			
+		end
+		
+		
+	end
+	
+	MainMenu()
+	
+end )
+
+net.Receive( "BlurHSOpenHitMenuNotes", function()
+
+	function MainMenu()
+		local menu = vgui.Create( "DFrame" )
+		menu:SetSize( 300, 100 )
+		menu:Center()
+		menu:SetDraggable( true )
+		menu:MakePopup()
+		menu:SetTitle( "" )
+		menu:ShowCloseButton( false )
+		menu.Paint = function( self, w, h )
+			DrawBlur(menu, 2)
+			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+			drawRectOutline( 2, 2, w - 4, h / 2.9, Color( 0, 0, 0, 85 ) )
+			draw.RoundedBox(0, 2, 2, w - 4, h / 3, Color(0,0,0,125))
+			draw.SimpleText( "Place A Hit", "HTSYSTitleFont", menu:GetWide() / 2, 20, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+		
+		local frameclose = vgui.Create( "DButton", menu )
+		frameclose:SetSize( 35, 35 )
+		frameclose:SetPos( menu:GetWide() - 34,5 )
+		frameclose:SetText( "X" )
+		frameclose:SetFont( "HTSYSfontclose" )
+		frameclose:SetTextColor( Color( 255, 255, 255 ) )
+		frameclose.Paint = function()
+			
+		end
+		frameclose.DoClick = function()
+			menu:Close()
+			menu:Remove()
+			gui.EnableScreenClicker( false )			
+		end	
+
+		local TextEntry = vgui.Create( "DTextEntry", menu )	-- create the form as a child of frame
+		TextEntry:SetPos( 10, 60 )
+		TextEntry:SetSize( menu:GetWide() - 20, 20 )
+		TextEntry:SetText( "Extra Notes" )
+		TextEntry.OnEnter = function( self )
+			net.Start("BlurHSSendHitNotes")
+				net.WriteString(self:GetValue())
+			net.SendToServer()
+			menu:Close()
+			menu:Remove()
+			gui.EnableScreenClicker( false )			
+		end
+		
+		
 	end
 	
 	MainMenu()
