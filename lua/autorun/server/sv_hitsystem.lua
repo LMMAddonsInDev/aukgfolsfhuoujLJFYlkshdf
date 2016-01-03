@@ -16,6 +16,7 @@ util.AddNetworkString("BlurHSOpenHitMenuPrice")
 util.AddNetworkString("BlurHSSendHitPrice")
 util.AddNetworkString("BlurHSOpenHitMenuNotes")
 util.AddNetworkString("BlurHSSendHitNotes")
+util.AddNetworkString("BlurHRecieveHitPrice")
 --[[Systems]]--
 --[[Errors]]--
 util.AddNetworkString("BlurHSErrorHitIsPly")
@@ -47,6 +48,9 @@ function SendGUI( ply )
 		net.Send(ply)
 	end
 end
+
+
+
 
 net.Receive("BlurHSPickSendHit", function( len, ply )
 	local hitman = net.ReadEntity()
@@ -83,10 +87,14 @@ net.Receive("BlurHSSendPlayerToHit", function( len, ply )
 
 end)
 
+
+
+
 net.Receive("BlurHSSendHitPrice", function( len, ply )
 	local hitprice = tonumber(net.ReadString())
 	local victim = net.ReadEntity()
 	local hitman = net.ReadEntity()
+	ply:addMoney(-hitprice)
 	
 	if not isnumber(hitprice) then
 		net.Start("BlurHSErrorPriceIsString")
@@ -107,6 +115,16 @@ net.Receive("BlurHSSendHitPrice", function( len, ply )
 				net.WriteEntity( victim )
 				net.WriteEntity( hitman )
 			net.Send(ply)
+			
+			
+			net.Start("BlurHRecieveHitPrice")
+				net.WriteString( hitprice )
+				net.WriteEntity( victim )
+				net.WriteEntity( hitman )
+			net.Send(ply)
+			
+			
+	
 		end
 	end
 	

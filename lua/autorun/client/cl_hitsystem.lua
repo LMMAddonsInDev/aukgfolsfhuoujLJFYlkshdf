@@ -146,20 +146,23 @@ local menu = vgui.Create( "DFrame" )
 		frameclose.Paint = function()
 			
 		end
-		
 		local model = vgui.Create( "DModelPanel", menu )
 		model:SetSize( 200, 250 )
 		model:SetPos( 395, 50 )
+		if rvictim == true then
 		model:SetModel( rvictim:GetModel() )  
+		else
+		model:SetModel(LocalPlayer():GetModel())
+		end
 		--model.Paint = function()
 		--	surface.DrawOutlinedRect( 0, 0, model:GetWide(), model:GetTall() )		
-		
+
 		frameclose.DoClick = function()
 			menu:Close()
 			menu:Remove()
 			model:Remove()			
 			gui.EnableScreenClicker( false )
-		end
+			end
 	end
 	
 	function Pendinghits()
@@ -210,26 +213,33 @@ local menu = vgui.Create( "DFrame" )
 			menu3:Remove()
 			MainMenu()
 		end			
-		
+	local notes = net.ReadString()
+	local hitprice = tonumber(net.ReadString())
+	local victim = net.ReadEntity()
+	local hitman = net.ReadEntity()
 		local DListView = vgui.Create( "DListView", menu3 )
 		DListView:SetSize( menu3:GetWide() - 20, menu3:GetTall() - 100 )
 		DListView:SetPos( 10, 85 )
 		DListView:AddColumn( "Placed On" )
 		DListView:AddColumn( "Placed By" )
 		DListView:AddColumn( "Price" )
+		DListView:AddLine( victim, victim, hitprice )
 		DListView.Paint = function( self, w, h )
 			DrawBlur(DListView, 2)
 			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
 			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
-		end
---		function DListView:DoDoubleClick( line )
---			local LocalText = DListView:GetLine( line ):GetValue( 2 )
---			local LocalTitle = DListView:GetLine( line ):GetValue( 1 )		
---		
---			LocalPlayer():ConCommand( "say "..LocalText )
---			menu2:Close()
---			menu2:Remove()			
---		end		
+		end 
+		function DListView:DoDoubleClick( line )
+		
+			
+			local LocalText = DListView:GetLine( line ):GetValue( 2 )
+			local LocalTitle = DListView:GetLine( line ):GetValue( 1 )		
+		
+			LocalPlayer():ConCommand( "say "..LocalText )
+			menu2:Close()
+			menu2:Remove()	
+
+		end		
 	end
 
 	MainMenu()	
@@ -270,27 +280,24 @@ net.Receive( "BlurHSOpenHitMenu", function()
 			gui.EnableScreenClicker( false )			
 		end	
 		
-		local placehit = vgui.Create( "DButton", menu )
-		placehit:SetSize( menu:GetWide() - 20, 20 )
-		placehit:SetPos( 10,60 )
-		placehit:SetText( "Select A Hitman" )
---		placehit:SetFont( "HTSYSfontclose" )
-		placehit.DoClick = function()
-			local dmenu = DermaMenu()
+		local combobox = vgui.Create("DComboBox", menu)
+			combobox:SetPos(10,60)
+			combobox:SetSize(menu:GetWide() - 20, 20)
+			combobox:SetValue("Select A Hitman")
 			for k, v in pairs( player.GetAll() ) do
-				if table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(v:Team()) ) then
-					dmenu:AddOption( v:Nick(), function()
+				if v != LocalPlayer() and table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(v:Team()) ) then
+				combobox:AddChoice(v:Nick(), function()
 						net.Start("BlurHSPickSendHit")
 							net.WriteEntity( v )
 						net.SendToServer()
 						menu:Close()
 						menu:Remove()
-						gui.EnableScreenClicker( false )						
-					end )
-				end
+						gui.EnableScreenClicker( false )	
+	
+	
+				end)
 			end
-			dmenu:Open()
-		end	
+		end
 		
 	end
 	
@@ -298,7 +305,7 @@ net.Receive( "BlurHSOpenHitMenu", function()
 	
 end )
 
-net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
+net.Receive("BlurHSOpenHitMenuPlayerToHit", function()
 
 	local hitman = net.ReadEntity()
 
@@ -334,33 +341,26 @@ net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
 			gui.EnableScreenClicker( false )			
 		end	
 		
-		local placehit = vgui.Create( "DButton", menu )
-		placehit:SetSize( menu:GetWide() - 20, 20 )
-		placehit:SetPos( 10,60 )
-		placehit:SetText( "Select A Victim" )
---		placehit:SetFont( "HTSYSfontclose" )
-		placehit.DoClick = function()
-			local dmenu = DermaMenu()
+		local combobox = vgui.Create("DComboBox", menu)
+			combobox:SetPos(10,60)
+			combobox:SetSize(menu:GetWide() - 20, 20)
+			combobox:SetValue("Select A Victim")
 			for k, v in pairs( player.GetAll() ) do
 				if v != LocalPlayer() and !table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(v:Team()) ) then
-					dmenu:AddOption( v:Nick(), function()
-						net.Start("BlurHSSendPlayerToHit")
+				combobox:AddChoice(v:Nick(), function()
+						net.Start("BlurHSPickSendHit")
 							net.WriteEntity( v )
-							net.WriteEntity(hitman)
 						net.SendToServer()
 						menu:Close()
 						menu:Remove()
-						gui.EnableScreenClicker( false )						
-					end )
-				end
+						gui.EnableScreenClicker( false )	
+	
+	
+				end)
 			end
-			dmenu:Open()
-		end	
-		
+		end
 	end
-	
 	MainMenu()
-	
 end )
 net.Receive( "BlurHSOpenHitMenuPrice", function()
 
@@ -459,12 +459,13 @@ net.Receive( "BlurHSOpenHitMenuNotes", function()
 			gui.EnableScreenClicker( false )			
 		end	
 
+net.Recieve("")
 		local TextEntry = vgui.Create( "DTextEntry", menu )	-- create the form as a child of frame
 		TextEntry:SetPos( 10, 60 )
 		TextEntry:SetSize( menu:GetWide() - 20, 20 )
 		TextEntry:SetText( "Extra Notes" )
 		TextEntry.OnEnter = function( self )
-			net.Start("BlurHSSendHitNotes")
+		net.Start("BlurHSSendHitNotes")
 				net.WriteString(self:GetValue())
 				net.WriteString(hitprice)
 				net.WriteEntity( victim )
