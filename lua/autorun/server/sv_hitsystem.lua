@@ -5,6 +5,7 @@ resource.AddFile( "sound/hitcompleted.mp3" )
 include("bhitsystem_config.lua")
 AddCSLuaFile("bhitsystem_config.lua")
 
+--[[Systems]]--
 util.AddNetworkString("BlurHSOpenHitmanMenu")
 util.AddNetworkString("BlurHSOpenHitMenu")
 util.AddNetworkString("BlurHSPickSendHit")
@@ -15,8 +16,20 @@ util.AddNetworkString("BlurHSOpenHitMenuPrice")
 util.AddNetworkString("BlurHSSendHitPrice")
 util.AddNetworkString("BlurHSOpenHitMenuNotes")
 util.AddNetworkString("BlurHSSendHitNotes")
-
-
+--[[Systems]]--
+--[[Errors]]--
+util.AddNetworkString("BlurHSErrorHitIsPly")
+util.AddNetworkString("BlurHSErrorHitOnSelf")
+util.AddNetworkString("BlurHSErrorPriceIsString")
+util.AddNetworkString("BlurHSErrorPriceIsToHigh")
+util.AddNetworkString("BlurHSErrorPriceIsToLow")
+util.AddNetworkString("")
+util.AddNetworkString("")
+util.AddNetworkString("")
+util.AddNetworkString("")
+util.AddNetworkString("")
+util.AddNetworkString("")
+--[[Errors]]--
 
 function SendGUI( ply )
 	if table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(ply:Team()) ) then
@@ -34,7 +47,8 @@ net.Receive("BlurHSPickSendHit", function( len, ply )
 	local hitman = net.ReadEntity()
 	
 	if hitman == ply then
-		--error msg
+		net.Start("BlurHSErrorHitIsPly")
+		net.Send(ply)
 		return
 	end
 
@@ -48,7 +62,8 @@ net.Receive("BlurHSSendPlayerToHit", function( len, ply )
 	local tohit = net.ReadEntity()
 	
 	if tohit == ply then
-		--error msg
+		net.Start("BlurHSErrorHitOnSelf")
+		net.Send(ply)
 		return 
 	end
 	
@@ -61,15 +76,17 @@ net.Receive("BlurHSSendHitPrice", function( len, ply )
 	local hitprice = tonumber(net.ReadString())
 	
 	if not isnumber(hitprice) then
-		--error msg
-
+		net.Start("BlurHSErrorPriceIsString")
+		net.Send(ply)
 		return
 	else
 		if hitprice > BHitSysConfig.MaxHitPrice then 
-			--error msg
+			net.Start("BlurHSErrorPriceIsToHigh")
+			net.Send(ply)
 			return
 		elseif hitprice < BHitSysConfig.MinHitPrice then
-			--error msg
+			net.Start("BlurHSErrorPriceIsToLow")
+			net.Send(ply)
 			return
 		else
 			net.Start("BlurHSOpenHitMenuNotes")

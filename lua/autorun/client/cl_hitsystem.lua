@@ -331,7 +331,7 @@ net.Receive( "BlurHSOpenHitMenuPlayerToHit", function()
 		placehit.DoClick = function()
 			local dmenu = DermaMenu()
 			for k, v in pairs( player.GetAll() ) do
-				if v != LocalPlayer() then
+				if v != LocalPlayer() and !table.HasValue( BHitSysConfig.HitmanTeams, team.GetName(v:Team()) ) then
 					dmenu:AddOption( v:Nick(), function()
 						net.Start("BlurHSSendPlayerToHit")
 							net.WriteEntity( v )
@@ -457,3 +457,29 @@ net.Receive( "BlurHSOpenHitMenuNotes", function()
 	MainMenu()
 	
 end )
+
+
+
+
+
+
+
+--[[Errors]]--
+net.Receive("BlurHSErrorHitIsPly", function()
+	chat.AddText(Color(0,0,0), "[HitMenu] ", Color(255,255,255), "You can not select yourself to be the hitman!")
+end )
+net.Receive("BlurHSErrorHitOnSelf", function()
+	chat.AddText(Color(0,0,0), "[HitMenu] ", Color(255,255,255), "You can not set a hit on yourself!")
+end )
+net.Receive("BlurHSErrorPriceIsString", function()
+	chat.AddText(Color(0,0,0), "[HitMenu] ", Color(255,255,255), "You need to enter a number!")
+end )
+net.Receive("BlurHSErrorPriceIsToHigh", function()
+	chat.AddText(Color(0,0,0), "[HitMenu] ", Color(255,255,255), "That price is too high!")
+end )
+net.Receive("BlurHSErrorPriceIsToLow", function()
+	chat.AddText(Color(0,0,0), "[HitMenu] ", Color(255,255,255), "That price is too low!")
+end )
+
+
+--[[Errors]]--
